@@ -20,8 +20,8 @@
 
 <body class="bg-white">
     <div class="container">
-        <h1 class="text-center mt-5">Login em Delooi</h1>
-        <form method="POST" action="{{ route('login') }}" class="mt-4">
+        <h1 class="text-center mt-5">Cadastro em Delooi</h1>
+        <form method="POST" action="{{ route('signup') }}" class="mt-4">
             @csrf
             @if ($errors->any())
                 <div role="alert">
@@ -33,6 +33,10 @@
                 </div>
             @endif
             <div class="mb-3">
+                <label for="name" class="form-label">Nome:</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
+            </div>
+            <div class="mb-3">
                 <label for="email" class="form-label">Email:</label>
                 <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
             </div>
@@ -40,8 +44,11 @@
                 <label for="password" class="form-label">Senha:</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <div><a href="{{ route('signup') }}">Não tem uma conta? Cadastre-se</a></div>
-            <button type="submit" class="btn btn-primary">Entrar</button>
+            <div class="mb-3">
+                <label for="password_confirmation" class="form-label">Confirme a senha:</label>
+                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Cadastrar</button>
         </form>
     </div>
 
