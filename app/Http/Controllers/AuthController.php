@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Services\AuthService;
+
 class AuthController extends Controller
 {
-    public function login(Request $request){
-        $credentials = $request->only('email', 'password');
+    public function __construct(private readonly AuthService $authService) {}
 
-        if (auth()->attempt($credentials)) {
+    public function login(LoginRequest $request)
+    {
+        if ($this->authService->authenticate($request->validated())) {
             return redirect()->intended('/dashboard');
         }
 
@@ -18,20 +21,9 @@ class AuthController extends Controller
         ]);
     }
 
-    public function signup(Request $request){
-        $validate = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
-
-        $user = User::create([
-            'name' => $validate['name'],
-            'email' => $validate['email'],
-            'password' => bcrypt($validate['password']),
-        ]);
-        
-        auth()->login($user);
+    public function signup(RegisterRequest $request)
+    {
+        $this->authService->register($request->validated());
 
         return redirect()->intended('/dashboard');
     }
