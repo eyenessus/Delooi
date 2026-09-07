@@ -2,64 +2,74 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddToCartRequest;
+use App\Http\Requests\StoreProductRequest;
 use App\Models\Produto;
+use App\Services\CheckoutService;
+use App\Services\ProductService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ProdutoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(private readonly ProductService $products, private readonly CheckoutService $checkout) {}
+
+    public function index(Request $request): View
     {
-        //
+        $cart = $request->session()->get('cart', []);
+        $products = $this->products->list();
+        $cartProducts = $this->products->cart($cart);
+
+        return view('dashboard', [
+            'products' => $products,
+            'cartProducts' => $cartProducts,
+            'cartTotal' => $cartProducts->sum('cart_subtotal'),
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreProductRequest $request): RedirectResponse
     {
-        //
+        $this->products->create(
+            $request->toData($request->user()->id),
+            $request->file('photo'),
+        );
+
+        return redirect()
+            ->route('dashboard')
+            ->with('success', 'Produto cadastrado com sucesso.');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function addToCart(AddToCartRequest $request, Produto $produto): RedirectResponse
     {
-        //
+        $cart = $request->session()->get('cart', []);
+        $cart[$produto->id] = min(99, ($cart[$produto->id] ?? 0) + $request->integer('quantity'));
+        $request->session()->put('cart', $cart);
+
+        return back()->with('success', 'Produto adicionado ao carrinho.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Produto $produto)
+    public function removeFromCart(Request $request, Produto $produto): RedirectResponse
     {
-        //
+        $cart = $request->session()->get('cart', []);
+        unset($cart[$produto->id]);
+        $request->session()->put('cart', $cart);
+
+        return back()->with('success', 'Produto removido do carrinho.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Produto $produto)
+    public function checkout(Request $request): RedirectResponse
     {
-        //
-    }
+        $cartProducts = $this->products->cart($request->session()->get('cart', []));
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Produto $produto)
-    {
-        //
-    }
+        if ($cartProducts->isEmpty()) {
+            return back()->withErrors(['cart' => 'Seu carrinho está vazio.']);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Produto $produto)
-    {
-        //
+        $this->checkout->checkout($request->user(), $cartProducts);
+
+        return redirect()
+            ->route('dashboard')
+            ->with('success', 'Compra realizada com sucesso.');
     }
 }

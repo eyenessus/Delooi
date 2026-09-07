@@ -12,8 +12,8 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        if ($this->authService->authenticate($request->validated())) {
-            return redirect()->intended('/dashboard');
+        if ($this->authService->authenticate($request->toData())) {
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors([
@@ -23,8 +23,8 @@ class AuthController extends Controller
 
     public function signup(RegisterRequest $request)
     {
-        $this->authService->register($request->validated());
+        $this->authService->register($request->toData());
 
-        return redirect()->intended('/dashboard');
+        return redirect()->route('dashboard');
     }
 }

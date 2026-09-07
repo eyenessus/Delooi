@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\DTO\RegisterUserData;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterRequest extends FormRequest
@@ -18,5 +19,14 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
+    }
+
+    public function toData(): RegisterUserData
+    {
+        return new RegisterUserData(
+            name: $this->string('name')->toString(),
+            email: $this->string('email')->toString(),
+            password: $this->string('password')->toString(),
+        );
     }
 }

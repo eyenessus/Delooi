@@ -2,9 +2,10 @@
 
 namespace App\Contracts;
 
+use App\DTO\RegisterUserData;
 use App\Models\User;
 
 interface UserRepositoryInterface
 {
-    public function create(array $attributes): User;
+    public function create(RegisterUserData $data): User;
 }

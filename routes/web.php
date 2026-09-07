@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProdutoController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,6 +16,10 @@ Route::get('/signup', function () {
 
 Route::post('/signup',[AuthController::class, 'signup'])->name('signup');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth');
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [ProdutoController::class, 'index'])->name('dashboard');
+    Route::post('/products', [ProdutoController::class, 'store'])->name('products.store');
+    Route::post('/cart/{produto}', [ProdutoController::class, 'addToCart'])->name('cart.add');
+    Route::delete('/cart/{produto}', [ProdutoController::class, 'removeFromCart'])->name('cart.remove');
+    Route::post('/checkout', [ProdutoController::class, 'checkout'])->name('checkout');
+});
