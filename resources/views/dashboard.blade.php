@@ -15,7 +15,13 @@
                 <h1 class="display-6 mb-1">Produtos</h1>
                 <p class="text-secondary mb-0">Olá, {{ auth()->user()->name }}.</p>
             </div>
-            <a class="btn btn-outline-primary" href="{{ route('dashboard') }}">Atualizar</a>
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-primary" href="{{ route('dashboard') }}">Atualizar</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="btn btn-outline-danger" type="submit">Sair</button>
+                </form>
+            </div>
         </header>
 
         @if (session('success'))
