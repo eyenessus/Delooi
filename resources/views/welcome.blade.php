@@ -18,32 +18,41 @@
 
 </head>
 
-<body class="bg-white">
-    <div class="container">
-        <h1 class="text-center mt-5">Login em Delooi</h1>
-        <form method="POST" action="{{ route('login') }}" class="mt-4">
-            @csrf
-            @if ($errors->any())
-                <div role="alert">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            <div class="mb-3">
-                <label for="email" class="form-label">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
+<body class="bg-light">
+    <main class="container min-vh-100 d-flex align-items-center py-4">
+        <div class="row justify-content-center w-100">
+            <div class="col-sm-10 col-md-7 col-lg-5 col-xl-4">
+                <section class="card shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <h1 class="h2 text-center mb-4">Login em Delooi</h1>
+                        <form method="POST" action="{{ route('login') }}">
+                            @csrf
+                            @if ($errors->any())
+                                <div class="alert alert-danger" role="alert">
+                                    @foreach ($errors->all() as $error)
+                                        <div>{{ $error }}</div>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Senha</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                        </form>
+                        <p class="text-center text-secondary mb-0 mt-4">
+                            Não tem uma conta?
+                            <a href="{{ route('signup') }}">Cadastre-se</a>
+                        </p>
+                    </div>
+                </section>
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Senha:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-            <div><a href="{{ route('signup') }}">Não tem uma conta? Cadastre-se</a></div>
-            <button type="submit" class="btn btn-primary">Entrar</button>
-        </form>
-    </div>
+        </div>
+    </main>
 
 </body>
 
